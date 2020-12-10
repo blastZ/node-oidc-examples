@@ -1,0 +1,22 @@
+{
+  "name": "node-oidc-examples",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "blastz",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/koa-ejs": "^4.2.2",
+    "@types/koa-mount": "^4.0.0",
+    "typescript": "^4.1.2"
+  },
+  "dependencies": {
+    "@blastz/nico": "^0.18.1",
+    "koa-ejs": "^4.3.0",
+    "koa-mount": "^4.0.0",
+    "oidc-provider": "^6.29.8"
+  }
+}

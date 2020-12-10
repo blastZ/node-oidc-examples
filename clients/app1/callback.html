@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App1 Callback</title>
+  </head>
+  <body>
+    <script>
+      const searchParams = new URLSearchParams(window.location.search);
+      const code = searchParams.get("code");
+
+      fetch("http://localhost:1818/token", {
+        method: "POST",
+        credentials: "include",
+        body: new URLSearchParams({
+          code,
+          grant_type: "authorization_code",
+          client_id: "app1",
+          client_secret: "app1",
+          redirect_uri: "http://localhost:8080/callback",
+        }),
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+        },
+      })
+        .then((o) => o.json())
+        .then((o) => console.log(o));
+    </script>
+  </body>
+</html>
+l
