@@ -1,38 +1,22 @@
 import nico, { InnerAppMiddleware } from "@blastz/nico";
 import mount from "koa-mount";
 import render from "koa-ejs";
-import Provider from "oidc-provider";
+import path from "path";
 
-const provider = new Provider("http://localhost:1818", {
-  clients: [
-    {
-      client_id: "app1",
-      client_secret: "app1",
-      grant_types: ["authorization_code", "refresh_token"],
-      redirect_uris: ["http://localhost:8080/callback"],
-    },
-    {
-      client_id: "app2",
-      client_secret: "app2",
-      grant_types: ["authorization_code", "refresh_token"],
-      redirect_uris: ["http://localhost:8081/callback"],
-    },
-  ],
-  cookies: {
-    long: {
-      signed: true,
-      maxAge: 1 * 24 * 60 * 60 * 1000,
-    },
-    short: {
-      signed: true,
-    },
-    keys: ["some secret key", "old one"],
-  },
+import db from "./api/model/mysql";
+import { routes } from "./config";
+import provider from "./provider";
+
+nico.useAppMiddleware(mount(provider.app), InnerAppMiddleware.ROUTES);
+
+render(nico, {
+  cache: false,
+  viewExt: "ejs",
+  root: path.resolve(__dirname, "./view"),
 });
 
-nico.useAppMiddleware(mount(provider.app), InnerAppMiddleware.GLOBAL_CORS);
-
 nico.init({
+  routes,
   security: {
     cors: {
       allRoutes: true,
@@ -40,6 +24,35 @@ nico.init({
       allowCredentials: true,
     },
   },
+  custom: {
+    datastores: {
+      default: {
+        url: "mysql://root:admin123@localhost:3318/op",
+      },
+    },
+  },
+  responses: {
+    ok: function ok(data: any, message?: string, success = true) {
+      this.status = 200;
+      this.body = {
+        data,
+        success,
+        message,
+      };
+    },
+    onValidateError: function onValidateError(err) {
+      this.status = 400;
+      this.body = {
+        success: false,
+        message: err.message,
+      };
+    },
+  },
+  logger: {
+    consoleLevel: "debug",
+  },
 });
+
+db.connect(nico.config.custom.datastores?.default?.url);
 
 nico.start(1818);
