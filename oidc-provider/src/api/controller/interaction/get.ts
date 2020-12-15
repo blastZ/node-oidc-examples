@@ -11,6 +11,10 @@ export default async function interactionGet(ctx: Context) {
   const client = await provider.Client.find(params.client_id);
 
   if (prompt.name === "login") {
+    // redirect to login page
+    return ctx.redirect("/login");
+
+    // render login page
     return ctx.render("login", {
       client,
       uid,

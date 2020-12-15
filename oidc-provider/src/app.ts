@@ -4,7 +4,7 @@ import render from "koa-ejs";
 import path from "path";
 
 import db from "./api/model/mysql";
-import { routes } from "./config";
+import { responses, routes, security } from "./config";
 import provider from "./provider";
 
 nico.useAppMiddleware(
@@ -20,13 +20,7 @@ render(nico, {
 
 nico.init({
   routes,
-  security: {
-    cors: {
-      allRoutes: true,
-      allowOrigins: ["http://localhost:8080", "http://localhost:8081"],
-      allowCredentials: true,
-    },
-  },
+  security,
   custom: {
     datastores: {
       default: {
@@ -34,30 +28,7 @@ nico.init({
       },
     },
   },
-  responses: {
-    ok: function ok(data: any, message?: string, success = true) {
-      this.status = 200;
-      this.body = {
-        data,
-        success,
-        message,
-      };
-    },
-    onValidateError: function onValidateError(err) {
-      this.status = 400;
-      this.body = {
-        success: false,
-        message: err.message,
-      };
-    },
-    onError: function onError(err) {
-      this.status = 500;
-      this.body = {
-        success: false,
-        message: err.message,
-      };
-    },
-  },
+  responses,
   logger: {
     consoleLevel: "debug",
   },

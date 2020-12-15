@@ -9,12 +9,14 @@ const provider = new Provider("http://localhost:1818", {
       client_secret: "app1",
       grant_types: ["authorization_code", "refresh_token"],
       redirect_uris: ["http://localhost:8080/callback"],
+      post_logout_redirect_uris: ["http://localhost:8080"],
     },
     {
       client_id: "app2",
       client_secret: "app2",
       grant_types: ["authorization_code", "refresh_token"],
       redirect_uris: ["http://localhost:8081/callback"],
+      post_logout_redirect_uris: ["http://localhost:8081"],
     },
   ],
   interactions: {
@@ -26,6 +28,26 @@ const provider = new Provider("http://localhost:1818", {
     devInteractions: {
       enabled: false,
     },
+    rpInitiatedLogout: {
+      logoutSource: async function logoutSource(ctx, form) {
+        console.log(form);
+        ctx.body = `<!DOCTYPE html>
+        <head>
+          <title>Logout</title>
+        </head>
+        <body>
+          <div>
+            ${form}
+            <button id="logout" type="submit" form="op.logoutForm" value="yes" name="logout"></button>
+            <button id="cancel" type="submit" form="op.logoutForm"></button>
+          </div>
+          <script>
+            document.getElementById('logout').click();
+          </script>
+        </body>
+        </html>`;
+      },
+    },
   },
   cookies: {
     long: {
@@ -34,6 +56,7 @@ const provider = new Provider("http://localhost:1818", {
     },
     short: {
       signed: true,
+      path: "/",
     },
     keys: ["some secret key", "old one"],
   },

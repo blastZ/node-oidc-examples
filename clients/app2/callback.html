@@ -25,7 +25,17 @@
         },
       })
         .then((o) => o.json())
-        .then((o) => console.log(o));
+        .then((o) => {
+          console.log(o);
+
+          const token = o.access_token;
+          const idToken = o.id_token;
+
+          localStorage.setItem("token", token);
+          localStorage.setItem("idToken", idToken);
+
+          window.location.href = "/";
+        });
     </script>
   </body>
 </html>
