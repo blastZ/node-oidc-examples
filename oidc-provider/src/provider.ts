@@ -1,4 +1,6 @@
 import Provider from "oidc-provider";
+import db from "./api/model/mysql";
+import { RedisAdapter } from "./redis-adapter";
 
 const provider = new Provider("http://localhost:1818", {
   clients: [
@@ -15,6 +17,16 @@ const provider = new Provider("http://localhost:1818", {
       redirect_uris: ["http://localhost:8081/callback"],
     },
   ],
+  interactions: {
+    url: async function (ctx, interaction) {
+      return `/api/op/v1/interaction/${ctx.oidc.uid}`;
+    },
+  },
+  features: {
+    devInteractions: {
+      enabled: false,
+    },
+  },
   cookies: {
     long: {
       signed: true,
@@ -25,22 +37,36 @@ const provider = new Provider("http://localhost:1818", {
     },
     keys: ["some secret key", "old one"],
   },
-  // findAccount: async function findAccount(ctx, sub, token) {
-  //   const user = await db.userDao.getUserById(Number(sub));
-  //   if (!user) return undefined;
+  claims: {
+    profile: ["name"],
+    email: ["email"],
+    phone: ["phone"],
+  },
+  adapter: RedisAdapter,
+  findAccount: async function findAccount(ctx, sub, token) {
+    const user = await db.userDao.getUserById(Number(sub));
+    if (!user) return undefined;
 
-  //   return {
-  //     accountId: sub,
-  //     async claims() {
-  //       return {
-  //         sub,
-  //         name: user.name,
-  //         email: user.email,
-  //         phone: user.phone,
-  //       };
-  //     },
-  //   };
-  // },
+    return {
+      accountId: sub,
+      async claims(use, scope, claims, rejected) {
+        console.log({
+          use,
+          scope,
+          claims,
+          rejected,
+        });
+        console.log(user);
+        return {
+          sub,
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+        };
+      },
+    };
+  },
 });
 
 export default provider;

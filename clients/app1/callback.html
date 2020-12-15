@@ -10,7 +10,7 @@
       const searchParams = new URLSearchParams(window.location.search);
       const code = searchParams.get("code");
 
-      fetch("http://localhost:1818/token", {
+      fetch("http://localhost:1818/api/op/v1/token", {
         method: "POST",
         credentials: "include",
         body: new URLSearchParams({
@@ -25,7 +25,30 @@
         },
       })
         .then((o) => o.json())
-        .then((o) => console.log(o));
+        .then((o) => {
+          console.log(o);
+
+          const token = o.access_token;
+          const idToken = o.id_token;
+
+          const url = "http://localhost:1818/api/op/v1/me?claims=name";
+          const body = new URLSearchParams({
+            access_token: token,
+          });
+
+          fetch(url, {
+            method: "POST",
+            credentials: "include",
+            body,
+            headers: {
+              "content-type": "application/x-www-form-urlencoded",
+            },
+          })
+            .then((o) => o.json())
+            .then((o) => {
+              console.log(o);
+            });
+        });
     </script>
   </body>
 </html>

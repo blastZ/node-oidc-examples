@@ -7,7 +7,10 @@ import db from "./api/model/mysql";
 import { routes } from "./config";
 import provider from "./provider";
 
-nico.useAppMiddleware(mount(provider.app), InnerAppMiddleware.ROUTES);
+nico.useAppMiddleware(
+  mount("/api/op/v1", provider.app),
+  InnerAppMiddleware.ROUTES
+);
 
 render(nico, {
   cache: false,
@@ -42,6 +45,13 @@ nico.init({
     },
     onValidateError: function onValidateError(err) {
       this.status = 400;
+      this.body = {
+        success: false,
+        message: err.message,
+      };
+    },
+    onError: function onError(err) {
+      this.status = 500;
       this.body = {
         success: false,
         message: err.message,

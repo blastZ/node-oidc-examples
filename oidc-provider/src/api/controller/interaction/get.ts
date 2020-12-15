@@ -21,11 +21,30 @@ export default async function interactionGet(ctx: Context) {
     });
   }
 
-  return ctx.render("interaction", {
-    client,
-    uid,
-    details: prompt.details,
-    params,
-    title: "Authorize",
-  });
+  if (prompt.name === "consent") {
+    const client = await provider.Client.find(params.client_id);
+    ctx.logger.debug(client);
+
+    // skip consent
+    const consent = {
+      rejectedScopes: [],
+      rejectedClaims: [],
+      replace: false,
+    };
+
+    const result = { consent };
+
+    return provider.interactionFinished(ctx.req, ctx.res, result, {
+      mergeWithLastSubmission: true,
+    });
+
+    // with consent
+    return ctx.render("interaction", {
+      client,
+      uid,
+      details: prompt.details,
+      params,
+      title: "Authorize",
+    });
+  }
 }
