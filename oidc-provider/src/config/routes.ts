@@ -29,22 +29,30 @@ export const routes: ConfigRoutes = {
   },
   "GET /login": {
     controller: async function loginView(ctx) {
-      const detail = await provider.interactionDetails(ctx.req, ctx.res);
+      const session =
+        ctx.cookies.get("_session") || ctx.cookies.get("_session.legacy");
 
-      ctx.logger.debug(detail);
+      try {
+        const detail = await provider.interactionDetails(ctx.req, ctx.res);
 
-      const { params, prompt, uid } = detail;
+        ctx.logger.debug(detail);
 
-      const client = await provider.Client.find(params.client_id);
+        const { params, prompt, uid } = detail;
 
-      return ctx.render("login", {
-        client,
-        uid,
-        details: prompt.details,
-        params,
-        title: "Sign-in",
-        flash: undefined,
-      });
+        const client = await provider.Client.find(params.client_id);
+
+        return ctx.render("login", {
+          client,
+          uid,
+          details: prompt.details,
+          params,
+          title: "Sign-in",
+          flash: undefined,
+        });
+      } catch (err) {
+        ctx.logger.error(err);
+        return ctx.redirect("/");
+      }
     },
   },
 };

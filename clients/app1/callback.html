@@ -26,7 +26,7 @@
       })
         .then((o) => o.json())
         .then((o) => {
-          console.log(o);
+          console.log(JSON.stringify(o));
 
           const token = o.access_token;
           const idToken = o.id_token;

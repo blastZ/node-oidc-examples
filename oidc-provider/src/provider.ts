@@ -18,6 +18,13 @@ const provider = new Provider("http://localhost:1818", {
       redirect_uris: ["http://localhost:8081/callback"],
       post_logout_redirect_uris: ["http://localhost:8081"],
     },
+    {
+      client_id: "app3",
+      client_secret: "app3",
+      grant_types: ["authorization_code", "refresh_token"],
+      redirect_uris: ["http://localhost:8082/callback"],
+      post_logout_redirect_uris: ["http://localhost:8082"],
+    },
   ],
   interactions: {
     url: async function (ctx, interaction) {
@@ -52,7 +59,6 @@ const provider = new Provider("http://localhost:1818", {
   cookies: {
     long: {
       signed: true,
-      maxAge: 1 * 24 * 60 * 60 * 1000,
     },
     short: {
       signed: true,

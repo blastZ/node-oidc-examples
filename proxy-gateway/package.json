@@ -1,0 +1,26 @@
+{
+  "name": "proxy-gateway",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pm2 startOrRestart ecosystem.dev.config.js && pm2 logs proxy-gateway --raw",
+    "clear": "pm2 stop proxy-gateway && pm2 delete proxy-gateway"
+  },
+  "author": "blastz",
+  "license": "MIT",
+  "dependencies": {
+    "@blastz/nico": "^0.18.1",
+    "axios": "^0.21.0",
+    "http-proxy": "^1.18.1",
+    "ioredis": "^4.19.4",
+    "koa-better-http-proxy": "^0.2.5",
+    "openid-client": "^4.2.2",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/http-proxy": "^1.17.4",
+    "@types/ioredis": "^4.17.8",
+    "@types/uuid": "^8.3.0"
+  }
+}

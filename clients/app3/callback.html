@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App3 Callback</title>
+  </head>
+  <body>
+    <script>
+      const searchParams = new URLSearchParams(window.location.search);
+      const code = searchParams.get("code");
+      const state = searchParams.get("state");
+
+      fetch("http://localhost:7070/api/proxy-gateway/v1/token", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({
+          code,
+          state,
+        }),
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((o) => o.json())
+        .then((o) => (window.location.href = o.data.originUrl));
+    </script>
+  </body>
+</html>
