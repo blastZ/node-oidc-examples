@@ -20,7 +20,7 @@
     "@blastz/nico": "^0.18.1",
     "ioredis": "^4.19.4",
     "joi": "^17.3.0",
-    "jose": "^3.3.1",
+    "jose": "^2.0.3",
     "koa-ejs": "^4.3.0",
     "koa-mount": "^4.0.0",
     "lodash.isempty": "^4.4.0",

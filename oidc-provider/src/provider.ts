@@ -96,6 +96,7 @@ const provider = new Provider("http://localhost:1818", {
       },
     };
   },
+  jwks: require("./jwks.json"),
 });
 
 export default provider;
