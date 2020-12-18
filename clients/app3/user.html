@@ -6,24 +6,19 @@
     <title>App3</title>
   </head>
   <body>
+    <h1>User Page</h1>
     <script>
       fetch("http://localhost:7070/api/app3/v1/users/self", {
         method: "GET",
         credentials: "include",
-      })
-        .then(async (o) => {
-          if (o.status === 401) {
-            const result = await o.json();
-            window.location.href = result.data.authUrl;
-
-            return result;
-          } else {
-            return o.json();
-          }
-        })
-        .then((o) => {
-          console.log(o);
-        });
+        headers: {
+          "X-Client-Ajax": 1,
+        },
+      }).then(async (o) => {
+        if (o.status === 418) {
+          window.location.reload();
+        }
+      });
     </script>
   </body>
 </html>

@@ -22,7 +22,10 @@ const provider = new Provider("http://localhost:1818", {
       client_id: "app3",
       client_secret: "app3",
       grant_types: ["authorization_code", "refresh_token"],
-      redirect_uris: ["http://localhost:8082/callback"],
+      redirect_uris: [
+        "http://localhost:8082/callback",
+        "http://localhost:7070/callback",
+      ],
       post_logout_redirect_uris: ["http://localhost:8082"],
     },
   ],
@@ -32,6 +35,9 @@ const provider = new Provider("http://localhost:1818", {
     },
   },
   features: {
+    introspection: {
+      enabled: true,
+    },
     devInteractions: {
       enabled: false,
     },
