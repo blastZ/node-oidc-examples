@@ -24,7 +24,7 @@ nico.init({
   custom: {
     datastores: {
       default: {
-        url: "mysql://root:admin123@localhost:3318/op",
+        url: "mysql://root:admin123@localhost:3318/oidc-examples",
       },
     },
   },

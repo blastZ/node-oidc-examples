@@ -102,8 +102,9 @@ Issuer.discover(config.op.url).then(function (issuer) {
         } else {
           const accessToken = (await redis.get(tokenSession)) as string;
 
-          const { active } = await client.introspect(accessToken);
-          if (!active) {
+          const introspectResult = await client.introspect(accessToken);
+          ctx.logger.debug({ introspectResult });
+          if (!introspectResult.active) {
             ctx.logger.debug("access token invalid");
 
             ctx.cookies.set(tokenSession);

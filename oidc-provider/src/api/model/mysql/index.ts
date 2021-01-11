@@ -25,7 +25,7 @@ class DB {
       entities: [User],
       logging: process.env.NODE_ENV === "development",
       logger: "advanced-console",
-      synchronize: false,
+      synchronize: process.env.NODE_ENV === "development",
       bigNumberStrings: false,
       supportBigNumbers: true,
     });
