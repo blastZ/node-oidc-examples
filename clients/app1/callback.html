@@ -9,8 +9,20 @@
     <script>
       const searchParams = new URLSearchParams(window.location.search);
       const code = searchParams.get("code");
+      const state = searchParams.get("state");
 
-      fetch("http://localhost:1818/api/op/v1/token", {
+      const stateItem = localStorage.getItem(state);
+      if (!stateItem) {
+        window.location.href = "/";
+      }
+
+      const { redirectUrl, exp } = JSON.parse(stateItem);
+      if (exp < Date.now()) {
+        localStorage.removeItem(state);
+        window.location.href = "/";
+      }
+
+      fetch("http://op.net:1818/api/op/v1/token", {
         method: "POST",
         credentials: "include",
         body: new URLSearchParams({
@@ -18,7 +30,7 @@
           grant_type: "authorization_code",
           client_id: "app1",
           client_secret: "app1",
-          redirect_uri: "http://localhost:8080/callback",
+          redirect_uri: "http://app.net:8080/callback",
         }),
         headers: {
           "content-type": "application/x-www-form-urlencoded",
@@ -34,7 +46,7 @@
           localStorage.setItem("token", token);
           localStorage.setItem("idToken", idToken);
 
-          window.location.href = "/";
+          window.location.href = redirectUrl;
         });
     </script>
   </body>
