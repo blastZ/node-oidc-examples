@@ -21,7 +21,9 @@ const config = {
   proxies: [
     {
       paths: [/^\/api\/.*/],
+      pathRewrite: {},
       target: "http://localhost:2020",
+      headers: [["op-user-id", "$userId"]],
     },
     {
       paths: [/^(?!\/api)\/.*/],
@@ -140,11 +142,52 @@ Issuer.discover(config.op.url).then(function (issuer) {
         await next();
       },
       proxy(o.target, {
+        proxyReqPathResolver: function (ctx: Context) {
+          if (o.pathRewrite) {
+            const matched = Object.entries(o.pathRewrite).find(([oldPath]) =>
+              ctx.path.startsWith(oldPath)
+            );
+
+            if (!matched) return ctx.path;
+
+            const path = matched[1] + ctx.path.slice(matched[0].length);
+
+            ctx.logger.debug({
+              stage: "proxy-pathResolver",
+              message: {
+                matched,
+                path,
+              },
+            });
+
+            return ctx.querystring ? path + "?" + ctx.querystring : path;
+          }
+
+          return ctx.path;
+        },
         proxyReqOptDecorator: function (proxyReqOpts, ctx) {
-          proxyReqOpts.headers["op-user-id"] = ctx.state.userInfo.sub;
-          proxyReqOpts.headers["op-user-name"] = ctx.state.userInfo.name;
-          proxyReqOpts.headers["op-user-email"] = ctx.state.userInfo.email;
-          proxyReqOpts.headers["op-user-phone"] = ctx.state.userInfo.phone;
+          if (o.headers) {
+            o.headers.map(([headerKey, valueOrKey]) => {
+              if (valueOrKey.startsWith("$")) {
+                const [pre, key] = valueOrKey.split("$");
+                // @ts-ignore
+                const value = ctx.state.userInfo[key];
+                if (value) {
+                  proxyReqOpts.headers[headerKey] = encodeURI(value);
+                }
+              } else {
+                proxyReqOpts.headers[headerKey] = encodeURI(valueOrKey);
+              }
+            });
+          }
+
+          ctx.logger.debug({
+            stage: "proxy-decorator",
+            message: {
+              proxyReqOpts,
+            },
+          });
+
           return proxyReqOpts;
         },
       })
