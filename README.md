@@ -6,7 +6,7 @@ Show how to use node oidc provider.
 
 Check below steps to start examples.
 
-### Init Mysql
+### Init MySQL
 
 Init mysql enviroment for user find examples.
 
