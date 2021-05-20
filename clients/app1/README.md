@@ -2,17 +2,8 @@
 
 ## How to start
 
-Bind hosts.
-
 ```bash
-127.0.0.1 op.net
-127.0.0.1 app.net
+npx serve ./app1/ -l 8080
 ```
 
-Serve app1 at port 8080.
-
-```bash
-npx serve app1/ -l 8080
-```
-
-Visit http://app.net:8080 to check the demo.
+Visit http://localhost:8080 to check the demo.

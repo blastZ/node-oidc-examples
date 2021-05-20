@@ -21,14 +21,14 @@
         document.getElementById("token").textContent = token;
         document.getElementById("id_token").textContent = idToken;
 
-        const logoutUrl = `http://op.net:1818/api/op/v1/session/end?post_logout_redirect_uri=http://app.net:8080&id_token_hint=${idToken}`;
+        const logoutUrl = `http://localhost:1818/api/op/v1/session/end?post_logout_redirect_uri=http://localhost:8080&id_token_hint=${idToken}`;
         document.getElementById("action").setAttribute("href", logoutUrl);
         document.getElementById("action").addEventListener("click", () => {
           localStorage.removeItem("token");
           localStorage.removeItem("idToken");
         });
 
-        const url = "http://op.net:1818/api/op/v1/me";
+        const url = "http://localhost:1818/api/op/v1/me";
         const body = new URLSearchParams({
           access_token: token,
         });
@@ -53,9 +53,8 @@
           })
           .then((o) => {
             console.log(o);
-            document.getElementById("user_info").textContent = JSON.stringify(
-              o
-            );
+            document.getElementById("user_info").textContent =
+              JSON.stringify(o);
           });
       } else {
         const actionElement = document.getElementById("action");
@@ -76,7 +75,7 @@
 
         actionElement.setAttribute(
           "href",
-          `http://op.net:1818/api/op/v1/auth?client_id=app1&redirect_uri=http://app.net:8080/callback&scope=openid profile email phone&response_type=code&state=${state}`
+          `http://localhost:1818/api/op/v1/auth?client_id=app1&redirect_uri=http://localhost:8080/callback&scope=openid profile email phone&response_type=code&state=${state}`
         );
       }
     </script>
