@@ -29,9 +29,6 @@ export const routes: ConfigRoutes = {
   },
   "GET /login": {
     controller: async function loginView(ctx) {
-      const session =
-        ctx.cookies.get("_session") || ctx.cookies.get("_session.legacy");
-
       try {
         const detail = await provider.interactionDetails(ctx.req, ctx.res);
 
@@ -39,7 +36,7 @@ export const routes: ConfigRoutes = {
 
         const { params, prompt, uid } = detail;
 
-        const client = await provider.Client.find(params.client_id);
+        const client = await provider.Client.find(<string>params.client_id);
 
         return ctx.render("login", {
           client,

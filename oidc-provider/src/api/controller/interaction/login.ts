@@ -1,13 +1,14 @@
-import { Context } from "@blastz/nico";
+import { NicoContext } from "@blastz/nico";
 import provider from "../../../provider";
 import db from "../../model/mysql";
 
-export default async function interactionLogin(ctx: Context) {
+export default async function interactionLogin(ctx: NicoContext) {
   const detail = await provider.interactionDetails(ctx.req, ctx.res);
-  const { uid, prompt, params } = detail;
-  const client = await provider.Client.find(params.client_id);
-
   ctx.logger.debug(detail);
+
+  const { uid, prompt, params } = detail;
+  const client = await provider.Client.find(<string>params.client_id);
+  ctx.logger.debug(client);
 
   const user = await db.userDao.getUserByEmail(ctx.state.body.email);
 
@@ -27,7 +28,7 @@ export default async function interactionLogin(ctx: Context) {
 
   const result = {
     login: {
-      account: String(user.id),
+      accountId: String(user.id),
     },
   };
 

@@ -1,4 +1,4 @@
-import Provider from "oidc-provider";
+import { Provider } from "oidc-provider";
 import db from "./api/model/mysql";
 import { RedisAdapter } from "./redis-adapter";
 
@@ -31,7 +31,7 @@ const provider = new Provider("http://localhost:1818", {
   ],
   interactions: {
     url: async function (ctx, interaction) {
-      return `/api/op/v1/interaction/${ctx.oidc.uid}`;
+      return `/api/op/v1/interaction/${interaction.uid}`;
     },
   },
   features: {
@@ -102,7 +102,62 @@ const provider = new Provider("http://localhost:1818", {
       },
     };
   },
-  jwks: require("./jwks.json"),
+  pkce: {
+    required: (ctx, client) => {
+      if (client.clientId === "app1") {
+        return false;
+      }
+
+      return true;
+    },
+    methods: ["S256"],
+  },
+  loadExistingGrant: async (ctx) => {
+    const grantId =
+      ctx.oidc?.result?.consent?.grantId ||
+      (ctx.oidc.client
+        ? ctx.oidc?.session?.grantIdFor(ctx.oidc.client.clientId)
+        : undefined);
+
+    if (grantId) {
+      return ctx.oidc.provider.Grant.find(grantId);
+    }
+
+    const client = ctx.oidc.client;
+    const session = ctx.oidc.session;
+    ctx.logger.debug({
+      stage: "provider.loadExistingGrant",
+      client,
+      session,
+    });
+
+    if (!client || !session || !session.accountId) {
+      return undefined;
+    }
+
+    const firstPartyList = ["app1"];
+
+    if (firstPartyList.includes(client.clientId)) {
+      // @ts-ignore
+      const grant = new ctx.oidc.provider.Grant({
+        clientId: client.clientId,
+        accountId: session.accountId,
+      });
+
+      grant.addOIDCScope("openid profile email phone");
+      grant.addOIDCClaims([]);
+      // grant.addResourceScope(
+      //   "urn:example:resource-indicator",
+      //   "api:read api:write"
+      // );
+
+      await grant.save();
+
+      return grant;
+    }
+
+    return undefined;
+  },
 });
 
 export default provider;
