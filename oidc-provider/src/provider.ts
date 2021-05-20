@@ -8,8 +8,8 @@ const provider = new Provider("http://localhost:1818", {
       client_id: "app1",
       client_secret: "app1",
       grant_types: ["authorization_code", "refresh_token"],
-      redirect_uris: ["http://localhost:8080/callback"],
-      post_logout_redirect_uris: ["http://localhost:8080"],
+      redirect_uris: ["http://app.net:8080/callback"],
+      post_logout_redirect_uris: ["http://app.net:8080"],
     },
     {
       client_id: "app2",
